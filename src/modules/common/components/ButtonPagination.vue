@@ -8,7 +8,7 @@
       :size="size"
       :disabled="false"
       :background="background"
-      layout="total, sizes, prev, pager, next, jumper"
+      layout="total, sizes, prev, pager, next"
       :total="40"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"

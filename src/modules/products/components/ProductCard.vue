@@ -14,7 +14,7 @@ defineProps<Props>();
     <el-image
       :src="product.images[0]"
       :alt="product.title"
-      style="width: 100%; height: 180px; object-fit: cover; border-radius: 10px"
+      style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px"
     />
 
     <el-space direction="vertical" style="width: 100%; margin-top: 10px">

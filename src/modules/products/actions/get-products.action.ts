@@ -2,12 +2,14 @@ import { producApi } from '@/api/productsApi.ts';
 import type { Product } from '@/modules/products/interfaces/product.interface.ts';
 import { getProductImageAction } from '@/modules/products/actions/index.ts';
 
-export const getProductsAction = async (page: number = 1, limit: number = 10): Product[] => {
+export const getProductsAction = async (
+  page: number = 1,
+  limit: number = 10,
+): Promise<Product[]> => {
   try {
-    console.log('llego 20', limit);
     const { data } = await producApi.get<Product[]>(`/products`, {
       params: {
-        offset: page * limit,
+        offset: (page - 1) * limit,
         limit,
       },
     });
