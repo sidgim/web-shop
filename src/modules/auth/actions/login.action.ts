@@ -34,7 +34,6 @@ export const loginAction = async (
         message: 'Invalid credentials',
       };
     }
-    console.log(e);
     throw new Error('Error login');
   }
 };

@@ -60,12 +60,7 @@
 import { ref, watchEffect } from 'vue';
 import { useAuthStore } from '@/modules/auth/stores/auth.store.ts';
 import { useToast } from 'vue-toastification';
-
-interface LoginForm {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-}
+import type { LoginForm } from '@/modules/auth/interfaces';
 
 const authStore = useAuthStore();
 const emailInputRef = ref<HTMLInputElement | null>(null);
@@ -99,11 +94,11 @@ const onLogin = async () => {
   } else {
     localStorage.removeItem('email');
   }
-  const ok = await authStore.login(email, password);
+  const res = await authStore.login(email, password);
 
-  if (ok) return;
+  if (res.ok) return;
 
-  toast.error('Invalid email or password');
+  toast.error(res.message);
 };
 
 watchEffect(() => {

@@ -4,34 +4,65 @@ import type { User } from '@/modules/auth/interfaces';
 import { AuthStatusEnum } from '@/modules/auth/interfaces';
 import { loginAction } from '@/modules/auth/actions';
 import { useLocalStorage } from '@vueuse/core';
+import { registerAction } from '@/modules/auth/actions/register.action.ts';
 
+interface ResponseMessage {
+  ok: boolean;
+  message: string;
+}
 export const useAuthStore = defineStore('auth', () => {
   const authStatus = ref(AuthStatusEnum.Checking);
   const user = ref<User | undefined>();
   const token = ref(useLocalStorage('token', ''));
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<ResponseMessage> => {
     try {
       const loginResponse = await loginAction(email, password);
       if (!loginResponse.ok) {
         logout();
-        return false;
+        return { ok: false, message: 'Invalid credentials' };
       }
-      user.value = loginResponse.user;
-      token.value = loginResponse.token;
-      authStatus.value = AuthStatusEnum.Authenticated;
-      return true;
+      updateStorage(loginResponse.user, loginResponse.token);
+      return { ok: true, message: 'login successfully' };
     } catch (e) {
+      logout();
       console.log(e);
-      return logout();
+      return { ok: false, message: `Error services login` };
     }
   };
-  const logout = () => {
+
+  const register = async (
+    fullName: string,
+    email: string,
+    password: string,
+  ): Promise<ResponseMessage> => {
+    try {
+      const registerResponse = await registerAction(fullName, email, password);
+      if (registerResponse.ok === false) {
+        logout();
+        return { ok: false, message: registerResponse.message };
+      }
+      updateStorage(registerResponse.user, registerResponse.token);
+
+      return { ok: true, message: 'Registered successfully' };
+    } catch (e) {
+      console.log(e);
+      return { ok: false, message: 'Error registering' };
+    }
+  };
+
+  const updateStorage = (userRes: User, tokenRes: string): void => {
+    user.value = userRes;
+    token.value = tokenRes;
+    authStatus.value = AuthStatusEnum.Authenticated;
+  };
+
+  const logout = (): void => {
     authStatus.value = AuthStatusEnum.Unauthenticated;
     user.value = undefined;
     token.value = '';
-    return false;
   };
+
   return {
     authStatus,
     user,
@@ -43,5 +74,6 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Actions
     login,
+    register,
   };
 });
