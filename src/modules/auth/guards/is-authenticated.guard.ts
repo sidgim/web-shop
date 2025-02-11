@@ -13,7 +13,6 @@ const isAuthenticatedGuard = async (
       name: 'login',
     });
   }
-
   return next();
 };
 
