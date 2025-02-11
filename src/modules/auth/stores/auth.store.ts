@@ -74,6 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   const logout = (): void => {
+    localStorage.removeItem('token');
     authStatus.value = AuthStatusEnum.Unauthenticated;
     user.value = undefined;
     token.value = '';
@@ -84,6 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     token,
     //Getters
+    isAdmin: computed(() => user.value?.roles.includes('admin')),
     isChecking: computed(() => authStatus.value === AuthStatusEnum.Checking),
     isAuthenticated: computed(() => authStatus.value === AuthStatusEnum.Authenticated),
     username: computed(() => user.value?.fullName),
@@ -92,5 +94,6 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     checkAuthStatus,
+    logout,
   };
 });
