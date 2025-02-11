@@ -5,6 +5,7 @@ import { AuthStatusEnum } from '@/modules/auth/interfaces';
 import { loginAction } from '@/modules/auth/actions';
 import { useLocalStorage } from '@vueuse/core';
 import { registerAction } from '@/modules/auth/actions/register.action.ts';
+import { checkAuthAction } from '@/modules/auth/actions/check-auth.action.ts';
 
 interface ResponseMessage {
   ok: boolean;
@@ -51,6 +52,21 @@ export const useAuthStore = defineStore('auth', () => {
     }
   };
 
+  const checkAuthStatus = async (): Promise<boolean> => {
+    try {
+      const statusRes = await checkAuthAction();
+      if (!statusRes.ok) {
+        logout();
+        return false;
+      }
+      updateStorage(statusRes.user, statusRes.token);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  };
+
   const updateStorage = (userRes: User, tokenRes: string): void => {
     user.value = userRes;
     token.value = tokenRes;
@@ -75,5 +91,6 @@ export const useAuthStore = defineStore('auth', () => {
     // Actions
     login,
     register,
+    checkAuthStatus,
   };
 });
